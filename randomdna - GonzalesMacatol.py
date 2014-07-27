@@ -1,6 +1,6 @@
 #MSIT/MIT 2nd Year 1st Semester
 #IT 440 Bioinformatics
-#Exercise 2
+#Exercise 3.1
 #by: Genesis Gonzales and Khris Macatol
 
 #Hi Ma'am Frances Vega, this program runs best in Python 3.x.
