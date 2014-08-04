@@ -18,14 +18,16 @@ import random
 length=int(input("Please enter the length of the random DNA sequence: "))
 print()
 
-print("The random DNA sequence is...")
+print(">myrandomsequence")
 
 
 sequence=""
 
 for i in range(0,length):
     sequence+=random.choice(["A","T","C","G"])
-
+    if(len(sequence)%60==0):
+        print(sequence)
+        sequence=""
 
 print(sequence)
 
