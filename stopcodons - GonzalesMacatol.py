@@ -1,9 +1,11 @@
 #MSIT/MIT 2nd Year 1st Semester
 #IT 440 Bioinformatics
-#Exercise 3.2
+#Exercise 3.2: stopcodons
 #by: Genesis Gonzales and Khris Macatol
 
-#Hi Ma'am Frances Vega, this program runs best in Python 3.x.
+#Hi Ma'am Frances Vega, this program runs best in Python 2.x.
+#Also, the random DNA sequence output cuts to the next line every after 60th character
+#to be similar to your samples as Fasta format.
 
 #Division of labor:
 #Genesis Gonzales - created the translate DNA program.
@@ -36,44 +38,141 @@
 
 #Start.
 
-#input
-strfile=str(raw_input("Please enter the filename of the DNA text file: "))
-print()
+items={"GCT":"Ala", "GCC":"Ala", "GCA":"Ala", "GCG":"Ala","CGT":"Arg", "CGC":"Arg", "CGA":"Arg", "CGG":"Arg", "AGA":"Arg", "AGG":"Arg","AAT":"Asn", "AAC":"Asn","GAT":"Asp", "GAC":"Asp","TGT":"Cys","TGC":"Cys","CAA":"Gln", "CAG":"Gln","GAA":"Glu","GAG":"Glu","GGT":"Gly", "GGC":"Gly", "GGA":"Gly", "GGG":"Gly","CAT":"His", "CAC":"His","ATT":"Ile", "ATC":"Ile", "ATA":"Ile","ATG":"Start","TTA":"Leu", "TTG":"Leu", "CTT":"Leu", "CTC":"Leu", "CTA":"Leu", "CTG":"Leu","AAA":"Lys","AAG":"Lys","ATG":"Met","TTT":"Phe", "TTC":"Phe","CCT":"Pro", "CCC":"Pro", "CCA":"Pro", "CCG":"Pro","TCT":"Ser", "TCC":"Ser", "TCA":"Ser", "TCG":"Ser", "AGT":"Ser", "AGC":"Ser","ACT":"Thr", "ACC":"Thr", "ACA":"Thr", "ACG":"Thr","TGG":"Trp","TAT":"Tyr", "TAC":"Tyr","GTT":"Val", "GTC":"Val", "GTA":"Val", "GTG":"Val","TAA":"Stop", "TGA":"Stop", "TAG":"Stop"}
 
-#output
-print("The ORF sequences is as follows:")
+b=True
+while(b):
+    print('Please input the DNA sequence to be translated then press "Enter": ')
 
-file=open(strfile, 'r')
-print file.readlines()
-file.close()
+    string=raw_input()
+    string=string.upper()
 
-#translation
-print("The translation is as follows:")
+    print(">single_stop_codon")
 
-print(">single_stop_codon")
-#first stop codon = TGA
-print("TGA")
+    sequence=""
 
-print(">stopcodons")
-#TGA = 4; TAA = 11; TAG = 2
-print("***************************************************")
+    for char in string:
+        
+        sequence+=char
+        if(len(sequence)%60==0):
+            print(sequence)
+            sequence=""
 
-print(">ambiguities")
-print("XXXXXXXXXXXXXXXXXX")
+    print(sequence)
 
-print(">proteinalphabet")
-print("ARNDCQEGHILKMFPSTWYV")
+    ambiguities=0
 
-print(">proteinalphabet2")
-print("ARNDCQEGHILKMFPSTWYV")
+    newString=""
+    for i in string:
+        if(i not in ("A", "T", "C", "G")):
+            ambiguities+=1
+        else:
+            newString+=i
 
-print(">proteinalphabet3")
-print("ARNDCQEGHILKMFPSTWYV")
+    stopCodons=set()
 
-print(">tooshort")
-print("X")
+    for i in range(0,len(newString),3):
+        if newString[i:i+3] in ("TGA","TAA","TAG"):
+            stopCodons.add(newString[i:i+3])
 
-print()
-input("Press enter to quit.")
+    if "TGA" in newString:
+        stopCodons.add("TGA")
+    if "TAA" in newString:
+        stopCodons.add("TAA")
+    if "TAG" in newString:
+        stopCodons.add("TAG")
+
+    stopCodonsTxt=""
+
+    for item in stopCodons:
+        stopCodonsTxt+=item
+
+    print(">stopcodons")
+
+    print(stopCodonsTxt)
+
+    print(">ambiguities")
+    print(ambiguities*"X")
+
+    for l in range(0,3):
+        if(l!=0):
+            print(">proteinalphabet"+str(l+1)+" ARNDCQEGHILKMFPSTWYV")
+        else:
+            print(">proteinalphabet ARNDCQEGHILKMFPSTWYV")      
+
+        newString2=""
+        newString2+=newString[:l]+" "
+        for i in range(l,len(newString),3):
+            if newString[i:i+3] in ("TGA","TAA","TAG"):
+                newString2+=","
+            else:
+                if(i+3<=len(newString)):
+                    newString2+=newString[i:i+3]+" "
+                else:
+                    newString2+=newString[i:]+" "
+
+        newString3=newString2.strip()
+
+        newString3=newString3.split(",")
+        #print(newString3)
+
+        maxStrings=list()
+
+        for item in newString3:
+            if(len(maxStrings)==0):
+                maxStrings.append(item.strip())
+            else:
+                if(len(maxStrings[0])<len(item.strip())):
+                    maxStrings=list()
+                    maxStrings.append(item.strip())
+                elif(len(maxStrings[0])==len(item.strip())):
+                    maxStrings.append(item.strip())
+
+        #print(maxStrings)
+        term=""
+        term2=""
+        for i in range(0,len(maxStrings)):          
+            
+            tooshort=True
+            maxi=0
+            for x in maxStrings[i].split():
+                maxi=max(maxi,len(x))
+                if(len(x)==3):
+                    tooshort=False
+                    term+=items[x]
+                    term2+=x
+                    term+="-"
+                    term2+="-"
+
+            if(tooshort):
+                print ""
+                print(">tooshort")
+                print("X"*maxi)
+                break
+                    
+            term=term[:-1]
+            term2=term2[:-1]
+            
+            if(i+1<len(maxStrings)):
+                term+=" and "
+                term2+=" and "
+
+       
+
+        if(len(term)!=0):
+            print(term2)
+            print(term)
+            print(">tooshort")
+            print ""
+
+
+    while True:
+        inpt=raw_input('"Enter" to go back from start or "Q":')
+
+        if(inpt=="Q" or inpt=="q" or inpt=="" or inpt=="\n"):
+            break
+
+    if(inpt=="Q" or inpt=="q"):
+        break
 
 #End.
